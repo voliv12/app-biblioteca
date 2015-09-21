@@ -26,6 +26,13 @@
         </ul> -->
       </div>
       
+      <div class="dropdown">
+  <button class="btn dropdown-toggle sr-only" type="button"
+          id="dropdownMenu1" data-toggle="dropdown">
+    Menú desplegable
+    <span class="caret"></span>
+  </button>
+  
     <div id='content' class='row-fluid'>
           <div style='height:20px;'></div>  
             <div>
