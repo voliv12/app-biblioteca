@@ -22,18 +22,16 @@ class Usuarios_model extends CI_Model
         }
      }
      
+
      //En esta funcion se actualiza el estado del libro de disponible a no disponible
      //Recibiendo como parametro el id del libro
      function actualizar_estado($id){
         $cambiaEstado = "No Disponible";
         $data = array('estado' => $cambiaEstado );
         $this->db->where('idLibro', $id)->update('libro',$data);
-        //$this->db->update('libro', 'estado');
-        //$this->db->select('estado');
-        //$this->db->from('libro');
-        //$this->db->set('estado',$cambiaEstado);
         //echo $this->db->last_query();
     }
+
 
     //En esta funcion se quiere evaluar la cantidad de los libros, cuantos quedan disponibles
     //actualmente en el sistema por si queda solo 1, se manda a llamar la funcion de actualizar
@@ -42,26 +40,31 @@ class Usuarios_model extends CI_Model
         $this->db->select('cantidad');
         $this->db->from('libro');
         $query = $this->db->where('idLibro',$id)->get();
+        $row = $query->row();
 
-        if ($query->num_rows() > 0){
-        
-            foreach ($query->result() as $row) {
-                echo $row->cantidad;
-        
-                if ($row->cantidad > 1){
-                $data = array('cantidad' => 'cantidad=cantidad-1');
-                $cantidadOri = $row->cantidad;
+            if($row->cantidad >=2){
+                $data = array('cantidad' => $row->cantidad-1);
                 $this->db->update('libro',$data);
-                    echo "se quita un valor";
-                }
-        
-                else{
-                    $this->actualizar_estado($id);
-                    echo "llega al segundo if";
-                }
-        
+                echo $this->db->last_query();
             }
-        }
+            else{
+                $data = array('cantidad' => $row->cantidad-1);
+                $this->db->update('libro',$data);
+                echo $this->db->last_query();
+                $this->actualizar_estado($id);
+            }
+    }
+
+    function mostrarCampos($id){
+        $this->db->select('titulo, autor, clasificacion');
+        $this->db->from('libro');
+        $query = $this->db->where('idLibro',$id)->get();
+        $row = $query->row();
+        //echo $this->db->last_query();
+        echo $row->titulo;
+        echo $row->autor;
+        echo $row->clasificacion;
+        //return $row->titulo;
     }
 }
 

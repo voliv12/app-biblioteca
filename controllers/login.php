@@ -27,7 +27,6 @@ class Login extends CI_Controller {
                 $usuario = $this->input->post('num_personal');            
                 $this->load->model('usuarios_model');
                 $row = $this->usuarios_model->buscar_en_BD($usuario, $password);
-
                 if(!$row){   
                     $datos['mensaje'] = "El usuario ".$datos['num_personal'] = $usuario." no está registrado o la contraseña es incorrecta. Intentelo de nuevo!";
                     $datos_plantilla['contenido'] = $this->load->view('success_login', $datos, true);

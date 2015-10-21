@@ -34,21 +34,11 @@
           <li><a href="usuario">Usuarios</a></li>
           <li><a href="prestamos/tabla">Prestamos</a></li>
           <li><a href="principal">Cerrar Sesión</a></li>
-
         </ul>
       </div>
       <link href="css/booststrap.min.css" rel="stylesheet">
     <div id='content' class='row-fluid'>
           <div style='height:20px;'></div>  
-          <!--  <script type="text/javascript">
-            function Ejecutar(evt){
-              if( confirm("Soy "+this.id) ){
-                return true;
-              } else{
-                evt.preventDefault();
-              }
-            }
-            </script> -->
             <div>
               <?php echo $contenido; ?>
             </div>
