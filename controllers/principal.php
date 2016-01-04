@@ -63,20 +63,8 @@ class principal extends CI_Controller {
             $this->db->from('libro');
             $query = $this->db->where('idLibro',$variableGlobal)->get();
             $registro = $query->row();
-            return site_url('prestamos/tablaprestamo/'.$variableGlobal.'/'.$registro->clasificacion.'/add/'.$variableGlobal.'/'.$registro->clasificacion);//. $registro->autor. $registro->titulo);
-
-
-
-            //return site_url('prestamos/tablaprestamo/'.$variableGlobal.'/add/'.$variableGlobal .$registro->titulo.$registro->autor.$registro->clasificacion);
-            //$registro = $resul;
-            //$varia = "";
-            //$this->session->set_flashdata('titulo',$varia);
-            //return $registro->autor;
-            //$this->load->model('usuarios_model');
-            //$row = $this->usuarios_model->mostrarCampos($variableGlobal);
-            //echo $row->titulo;
+            return site_url('prestamos/tablaprestamo/'.$variableGlobal.'/'.$registro->clasificacion.' '.$registro->titulo.' '.$registro->autor.'/add/'.$variableGlobal.'/'.$registro->clasificacion.' '.$registro->titulo.' '.$registro->autor);
         }
-
 
 
         //Es llamada por la funcion index para el usuario normal

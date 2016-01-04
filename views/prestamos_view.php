@@ -24,6 +24,29 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <meta 'robot' content='noindex', 'nofollow'>
+
+    <script type="text/javascript">
+    $(document).ready(function()
+    {
+
+    $('.confirm-div').hide();
+    <?php if($this->session->flashdata('resultado_insercion')){ ?>
+    $('.confirm-div').html('<?php echo $this->session->flashdata('resultado_insercion'); ?>').show();
+    });
+    <?php } ?>
+    //$("#field-idLibro").val($("#target option:first").val());
+    //$('#field-idLibro option:selected').text();
+    //$("#field-idLibro option:first").prop("selected", "selected");
+    //$("#field-idLibro").prop("selectedIndex",0);
+    //$('#field-idLibro option:first-child')
+    //$('#field-idLibro.chosen-select chzn-done option:first-child').attr("selected","selected");
+    //$("");
+    //jQuery("field-idLibro option:first-child").attr("selected",true);
+    $('field-idLibro').find('option:first').attr('selected','selected');
+    })
+    </script>
+    
+
   </head>
   
   <body>
@@ -41,6 +64,6 @@
     <div id='content' class='row-fluid'>
           <div style='height:20px;'></div> 
               <div>
-              <?php echo $contenido; ?>
+              <?php echo $contenido;?>
             </div>
 </html>

@@ -17,25 +17,31 @@ class Login extends CI_Controller {
     }
     
     function validar_usuario(){                                                          
-        $this->form_validation->set_rules('password','password','trim|required|min_length[5]|sha1');        
+        $this->form_validation->set_rules('contrasena','password','trim|required|min_length[5]|sha1');        
+        
         if ($this->form_validation->run() == FALSE){
                 $datos['mensaje'] = "La contraseña debe contener como mínimo 5 carácteres";                
                 $datos_plantilla['contenido'] = $this->load->view('success_login', $datos, true);
                 $this->load->view('login_view', $datos_plantilla);    
+            
             } else {
-                extract($_POST);        
-                $usuario = $this->input->post('num_personal');            
+                extract($_POST);                    
+                $usuario = $this->input->post('nusuario');         
                 $this->load->model('usuarios_model');
-                $row = $this->usuarios_model->buscar_en_BD($usuario, $password);
+                $row = $this->usuarios_model->buscar_en_BD($usuario, $contra);
+                echo $this->db->last_query();
+                
                 if(!$row){   
                     $datos['mensaje'] = "El usuario ".$datos['num_personal'] = $usuario." no está registrado o la contraseña es incorrecta. Intentelo de nuevo!";
                     $datos_plantilla['contenido'] = $this->load->view('success_login', $datos, true);
                     $this->load->view('login_view', $datos_plantilla);
+                
                 }else{
-                        $newdata = array(                                     
-                            'num_personal'=> $row->nomusuario,
-                            'logged_in' => TRUE );  
+                        $newdata = array(
+                        'nusuario'=> $row->num_personal,
+                        'logged_in' => TRUE );
                         $this->session->set_userdata($newdata);
+                        echo $this->db->last_query();
                         redirect('principal/admi');
                 }
             }

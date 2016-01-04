@@ -55,7 +55,7 @@
       <form class="form-signin" action="../biblioteca/login/validar_usuario" method="POST">       
         <h4 class="form-signin-heading">     Inicio de Sesion     </h4>
         <input type="text" name="nusuario" class="input-block-level" placeholder="Nombre del usuario">
-        <input type="password" name="password" class="input-block-level" placeholder="Contraseña">
+        <input type="password" name="contrasena" class="input-block-level" placeholder="Contraseña">
         <label class="checkbox">
         <input type="checkbox" value="remember-me"> Recordarme
         </label>        

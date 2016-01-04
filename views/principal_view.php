@@ -23,8 +23,11 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    
+
 
   </head>
+  
   <body>
     <div class="container">
       <div class="masthead">
@@ -38,7 +41,7 @@
       </div>
       <link href="css/booststrap.min.css" rel="stylesheet">
     <div id='content' class='row-fluid'>
-          <div style='height:20px;'></div>  
+          <div style='height:20px;'></div> 
             <div>
               <?php echo $contenido; ?>
             </div>

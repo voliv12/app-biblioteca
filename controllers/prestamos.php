@@ -18,42 +18,70 @@ class Prestamos extends CI_Controller {
             $registro = urldecode($valor);
             $fecha = date("Y/m/d");
             $crud = new grocery_crud();
-            $crud->set_table('prestamo','libro');
+            $crud->set_table('prestamo');
             $crud->set_subject('Prestamos');
-            $crud->display_as('idLibro','Datos del libro')
+            $crud->display_as('datos','Datos del libro')
             ->display_as('idUsuario','Nombre de Usuario');
             $crud->unset_edit();
             $crud->unset_delete();
             $crud->unset_print();
             $crud->unset_export();
+            $crud->field_type('idLibro','hidden',$variableGlobal);
+            $crud->callback_add_field('datos',array($this,'recuperaDatos'));
             $crud->set_relation('idUsuario','usuario_biblioteca','{nombre} {apellidos}');
             $crud->field_type('fecha_entrega','hidden',$this->calculaFecha("days",14,$fecha));
-            $crud->callback_field('idLibro',array($this,'recuperaDatos'));
+            $crud->callback_after_insert(array($this, 'actualizarPrestamo'));
             $output = $crud->render();
             $this->_example_output($output);
-            $this->load->model('usuarios_model');
-            $row1 = $this->usuarios_model->cantidad($variableGlobal);
-            $row = $this->usuarios_model->actualizar_estado($variableGlobal);
         }
 
+        function actualizarPrestamo($variableGlobal){
+            global $variableGlobal;
+            $this->db->select('cantidad');
+            $this->db->from('libro');
+            $query = $this->db->where('idLibro',$variableGlobal)->get();
+            $row = $query->row();
+            if($row->cantidad >= 2){
+                $data1 = array('cantidad' => $row->cantidad-1);
+                $this->db->update('libro',$data1, array('idLibro' => $variableGlobal));
+            }
+            elseif ($row->cantidad=1) {
+                $data = array('cantidad' => $row->cantidad-1);
+                $this->db->update('libro',$data, array('idLibro' => $variableGlobal));
+                $this->actualizar_estado($id);
+            }
+            else{
+                echo "No se pueden hacer mas prestamos";
+            } 
+                echo $this->db->last_query();
+        }
 
-        function recuperaDatos(){
+        function actualizar_estado($variableGlobal){
+            global $variableGlobal;
+            $cambiaEstado = "No Disponible";
+            $cambiaEstado1 = "Disponible";
+            $this->db->select('estado');
+            $this->db->from('libro');
+            $query = $this->db->where('idLibro',$variableGlobal)->get();
+            $row = $query->row();
+                
+                if($row->estado == 'Disponible'){
+                $data = array('estado' => $cambiaEstado);
+                $this->db->where('idLibro', $variableGlobal)->update('libro',$data);        
+                }
+
+                if($row->estado == 'No Disponible'){
+                $data1 = array('estado' => $cambiaEstado1);
+                $this->db->where('idLibro', $variableGlobal)->update('libro',$data1);        
+                }
+                
+        }
+
+        function recuperaDatos($registro){
             global $registro;
-            return '<input type="text" name="clasificacion" value="'.$registro.'" readonly>';
-
-
-            //$variable = $registro;
-            //echo $variable; 
-            //return '<div class="form-display-as-box" id="titulooo"></div>';
-            //<input type="text" name="titulo" value="'.$registro.'" readonly>';
+            $regresa ='<input id=field-datos type="text" name="datos" value="'.$registro.'" maxlength="20" disabled="true">';
+            return $regresa;
         }
-
-
-
-
-
-
-
 
         //Esta funcion es llamada cuando el administrador da clic sobre la pestaña de prestamos
         function tabla(){
@@ -64,7 +92,8 @@ class Prestamos extends CI_Controller {
             $crud->required_fields('Fecha_salida', 'Fecha_entrega');
             $crud->display_as('idUsuario','Nombre de Usuario')
             ->display_as('idLibro','Nombre del libro');
-            $crud->add_action('Entrega','https://cdn3.iconfinder.com/data/icons/musthave/16/Check.png','','',array($this, 'libro_regresa'));
+            $crud->columns('idLibro', 'idUsuario', 'fecha_salida', 'fecha_entrega');
+            $crud->add_action('Entrega','https://cdn3.iconfinder.com/data/icons/musthave/16/Check.png','','',array($this, 'redirigir'));
             $crud->unset_add();
             $crud->unset_edit();
             $crud->unset_delete();
@@ -74,15 +103,35 @@ class Prestamos extends CI_Controller {
             $crud->set_relation('idUsuario','usuario_biblioteca','{nombre} {apellidos}');
             $crud->field_type('fecha_salida','hidden',$fecha);
             $output = $crud->render();
-            $this->_example_output($output);    
+            $this->_example_output($output); 
         }
 
-        //En esta funcion regresaran los libros prestados.
-        function libro_regresa($primary_key, $row){
+    function redirigir($primary_key){
+        return site_url('prestamos/libro_regresa/'.$primary_key);
+    }    
+
+    function libro_regresa($primary_key){
             global $variableGlobal;
             $variableGlobal = $primary_key;
-            //return site_url('prestamos/tablaprestamo/'.$variableGlobal.'/add/'.$variableGlobal);
+            $this->db->select('cantidad');
+            $this->db->from('libro');
+            $query = $this->db->where('idLibro',$primary_key)->get();
+            $row = $query->row();
+
+            if($row->cantidad >= 1){   
+                    $data1 = array('cantidad' => $row->cantidad+1);
+                    $this->db->where('idLibro',$primary_key);
+                    $this->db->update('libro',$data1);
+                }
+            else{
+                $data = array('cantidad' => $row->cantidad+1);
+                $this->db->where('idLibro',$primary_key);
+                $this->db->update('libro',$data);
+                $this->actualizar_estado($primary_key);
+            }
+        $this->load->view('prestamos_regreso', null);
         }
+
 
         //Se carga el contenido de la vista
         function _example_output($output = null){ 
@@ -90,6 +139,7 @@ class Prestamos extends CI_Controller {
             $datos_plantilla['contenido'] = $this->load->view('output_view', $output, TRUE);
             $this->load->view('principal_view', $datos_plantilla);   
         }
+
 
         //Aqui se calcula la fecha de entrega del libro que es mandada a llamar por la funcion
         //tablaprestamo, donde recibe 3 parametros que son, el modo que es en dias, el valor 
